@@ -75,7 +75,8 @@ public class BannerCommand implements CommandExecutor {
                             ItemStack b = p.getInventory().getItemInMainHand();
                             String pname = p.getName();
                             BannerMeta banner = (BannerMeta) b.getItemMeta();
-                            Main.config.getConfig().set(pname + ".basecolor", banner.getBaseColor());
+                            assert banner != null;
+                            Main.config.getConfig().set(pname + ".material", b.getType());
                             Main.config.getConfig().set(pname + ".pattern", banner.getPatterns());
                             Main.config.saveConfig();
                             p.sendMessage(Utils.chat("&aCustom Banner Saved"));
@@ -108,28 +109,37 @@ public class BannerCommand implements CommandExecutor {
                 }
             }
             if (args[0].equalsIgnoreCase("help")){
-                p.sendMessage(Utils.chat("&eBanner Commands"));
+                p.sendMessage(Utils.chat("&6Banner Commands"));
                 p.sendMessage(Utils.chat("&e-/banner: Create a custom banner"));
                 p.sendMessage(Utils.chat("&e-/banner save: Save your custom banner"));
+                p.sendMessage(Utils.chat("&e-/banner give: Gives your custom banner"));
                 p.sendMessage(Utils.chat("&e-/banner reset: Reset the Items of custom banner creator"));
                 p.sendMessage(Utils.chat("&e-/banner leave: Leave from custom banner creator"));
                 p.sendMessage(Utils.chat("&e-/banner reload: Reload Data File"));
-
+            }
+            if (args[0].equalsIgnoreCase("clear")){
+                if (sender.hasPermission("banner.admin")){
+                    bgived.clear();
+                    sender.sendMessage(Utils.chat("&aSetting all Players gived banners to 0..."));
+                }
             }
             if (args[0].equalsIgnoreCase("give")){
-                if (makingb.contains(p)){
+                if (!Main.config.getConfig().contains(p.getName())){
+                    p.sendMessage(Utils.chat("&cYou did not create your custom banner, do /banner help to see all commands"));
+                    return true;
+                }
+                if (bgived.contains(p)){
                     p.sendMessage(Utils.chat("&cWe already give to you the Custom banner"));
                     return true;
                 }
                 Inventory inv = p.getInventory();
-                ItemStack banner = new ItemStack(Material.WHITE_BANNER, 1);
+                ItemStack banner = new ItemStack((Material) Main.config.getConfig().get(p.getName() + ".material"), 1);
                 BannerMeta bmeta = (BannerMeta) banner.getItemMeta();
                 String pname = p.getName();
                 assert bmeta != null;
-                bmeta.setBaseColor(DyeColor.getByColor(Main.config.getConfig().getColor(pname + ".basecolor")));
-                bmeta.setPatterns((List<Pattern>) Main.config.getConfig().getList(pname + "pattern"));
+                bmeta.setPatterns((List<Pattern>) Main.config.getConfig().getList(pname + ".pattern"));
                 banner.setItemMeta(bmeta);
-                makingb.add(p);
+                bgived.add(p);
                 inv.addItem(banner);
                 p.sendMessage(Utils.chat("&aBanner Gived!"));
             }
