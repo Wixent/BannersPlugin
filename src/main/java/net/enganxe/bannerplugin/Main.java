@@ -16,6 +16,7 @@ public final class Main extends JavaPlugin {
         new CreatorEvents(this);
         BannerCommand.makingb.clear();
         BannerCommand.bgived.clear();
+        BannerCommand.man = true;
         getLogger().info("BannerPlugin by Wixent has been enabled");
     }
 

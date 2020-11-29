@@ -22,6 +22,7 @@ public class BannerCommand implements CommandExecutor {
     public static List<Player> makingb = new ArrayList<Player>();
     public static List<Player> bgived = new ArrayList<Player>();
     public static Inventory saveinv;
+    public static boolean man;
 
     public BannerCommand(Main plugin){
         this.plugin = plugin;
@@ -37,6 +38,10 @@ public class BannerCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 0){
+            if (man == false){
+                sender.sendMessage(Utils.chat("&cBanner Management is not enabled"));
+                return true;
+            }
             if (!makingb.contains(p)) {
                 makingb.add(p);
                 saveinv = p.getInventory();
@@ -123,18 +128,32 @@ public class BannerCommand implements CommandExecutor {
                     sender.sendMessage(Utils.chat("&aSetting all Players gived banners to 0..."));
                 }
             }
-            if (args[0].equalsIgnoreCase("give")){
-                if (!Main.config.getConfig().contains(p.getName())){
-                    p.sendMessage(Utils.chat("&cYou did not create your custom banner, do /banner help to see all commands"));
-                    return true;
+            if (args[0].equalsIgnoreCase("enable")){
+                if (sender.hasPermission("banner.admin")){
+                    bgived.clear();
+                    man = true;
+                    sender.sendMessage(Utils.chat("&aBanner Management has been enabled"));
                 }
+            }
+            if (args[0].equalsIgnoreCase("disable")){
+                if (sender.hasPermission("banner.admin")){
+                    bgived.clear();
+                    man = false;
+                    sender.sendMessage(Utils.chat("&cBanner Management has been disabled"));
+                }
+            }
+            if (args[0].equalsIgnoreCase("give")){
                 if (bgived.contains(p)){
                     p.sendMessage(Utils.chat("&cWe already give to you the Custom banner"));
                     return true;
                 }
                 Inventory inv = p.getInventory();
-                ItemStack banner = new ItemStack((Material) Main.config.getConfig().get(p.getName() + ".material"), 1);
+                assert Main.config.getConfig().getString(p.getName()  + ".material") != null;
+                Material e = Main.config.getConfig().getObject(p.getName()  + ".material", Material.class);
+                ItemStack banner = new ItemStack(e);
+
                 BannerMeta bmeta = (BannerMeta) banner.getItemMeta();
+                ItemStack a = new ItemStack(Material.WHITE_WOOL);
                 String pname = p.getName();
                 assert bmeta != null;
                 bmeta.setPatterns((List<Pattern>) Main.config.getConfig().getList(pname + ".pattern"));
@@ -156,22 +175,9 @@ public class BannerCommand implements CommandExecutor {
 
     public void GiveItem(Player p){
         //banners
-        ItemStack a = new ItemStack(Material.WHITE_BANNER, 1);
-        ItemStack b = new ItemStack(Material.ORANGE_BANNER, 1);
-        ItemStack c = new ItemStack(Material.MAGENTA_BANNER, 1);
-        ItemStack d = new ItemStack(Material.LIGHT_BLUE_BANNER, 1);
-        ItemStack e = new ItemStack(Material.YELLOW_BANNER, 1);
-        ItemStack f = new ItemStack(Material.LIME_BANNER, 1);
-        ItemStack g = new ItemStack(Material.PINK_BANNER, 1);
-        ItemStack h = new ItemStack(Material.GRAY_BANNER, 1);
-        ItemStack i = new ItemStack(Material.LIGHT_GRAY_BANNER, 1);
-        ItemStack j = new ItemStack(Material.CYAN_BANNER, 1);
-        ItemStack k = new ItemStack(Material.PURPLE_BANNER, 1);
-        ItemStack l = new ItemStack(Material.BLUE_BANNER, 1);
-        ItemStack m = new ItemStack(Material.BROWN_BANNER, 1);
-        ItemStack n = new ItemStack(Material.GREEN_BANNER, 1);
-        ItemStack o = new ItemStack(Material.RED_BANNER, 1);
-        ItemStack pe = new ItemStack(Material.BLACK_BANNER, 1);
+        ItemStack a = new ItemStack(Material.STICK, 1);
+        ItemStack b = new ItemStack(Material.WHITE_WOOL, 6);
+
         //patterns
         ItemStack pattern1 = new ItemStack(Material.FLOWER_BANNER_PATTERN, 64);
         ItemStack pattern2 = new ItemStack(Material.CREEPER_BANNER_PATTERN, 64);
@@ -200,20 +206,7 @@ public class BannerCommand implements CommandExecutor {
         //givear items unu
         inv.addItem(a);
         inv.addItem(b);
-        inv.addItem(c);
-        inv.addItem(d);
-        inv.addItem(e);
-        inv.addItem(f);
-        inv.addItem(g);
-        inv.addItem(h);
-        inv.addItem(i);
-        inv.addItem(j);
-        inv.addItem(k);
-        inv.addItem(l);
-        inv.addItem(m);
-        inv.addItem(n);
-        inv.addItem(o);
-        inv.addItem(pe);
+
         // patterns
         inv.addItem(pattern1);
         inv.addItem(pattern2);
