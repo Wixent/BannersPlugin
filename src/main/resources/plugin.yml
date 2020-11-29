@@ -1,0 +1,19 @@
+name: BannerPlugin
+version: ${project.version}
+main: net.enganxe.bannerplugin.Main
+api-version: 1.16
+authors: [Wixent, ImZomi]
+description: Banner Plugin for Enganxe Network
+website: https://github.com/Wixent
+commands:
+  banner:
+    description: Banner Command
+    permission: banner.use
+permissions:
+  banner.use:
+    description: use /banner command
+    default: op
+  banner.admin:
+    description: use /banner reload command
+    default: op
+
